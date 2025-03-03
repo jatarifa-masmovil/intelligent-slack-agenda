@@ -1,7 +1,6 @@
 package com.masorange.temporal.hackathon;
 
 import com.masorange.temporal.hackathon.activities.OpenAIActivity.OpenAIActivityImpl;
-import com.masorange.temporal.hackathon.activities.messages.SlackActivitiesImpl;
 import com.masorange.temporal.hackathon.workflows.IntelligentAgendaScheduler;
 import com.masorange.temporal.hackathon.workflows.IntelligentAgendaScheduler.IntelligentAgendaSchedulerImpl;
 
@@ -22,21 +21,22 @@ public class Main {
     var factory = WorkerFactory.newInstance(client);
     var worker = factory.newWorker("agenda-tasklisk");
 
-    worker.registerWorkflowImplementationTypes(IntelligentAgendaSchedulerImpl.class);
-    worker.registerActivitiesImplementations(new SlackActivitiesImpl(Slack.getInstance()), new OpenAIActivityImpl());
-    factory.start();
+		worker.registerWorkflowImplementationTypes(IntelligentAgendaSchedulerImpl.class);
+    worker.registerActivitiesImplementations(new com.masorange.temporal.hackathon.activities.messages.SlackActivitiesImpl(
+				Slack.getInstance()), new OpenAIActivityImpl());
+		factory.start();
 
-    var options = WorkflowOptions.newBuilder()
-        .setTaskQueue("agenda-tasklisk")
-        .setWorkflowId("IntelligentAgendaScheduler")
-        .setCronSchedule("*/1 * * * *")  // Each minute
-        .build();
-    var workflow = client.newWorkflowStub(IntelligentAgendaScheduler.class, options);
-    try {
-      var execution = WorkflowClient.start(workflow::summarizeSlackChannelConversations);
-      log.info("Execution: {}", execution);
-    } catch (WorkflowExecutionAlreadyStarted e) {
-      log.info("Scheduler already running");
-    }
-  }
+		var options = WorkflowOptions.newBuilder()
+			.setTaskQueue("agenda-tasklisk")
+			.setWorkflowId("IntelligentAgendaScheduler")
+			.setCronSchedule("*/1 * * * *")  // Each minute
+			.build();
+		var workflow = client.newWorkflowStub(IntelligentAgendaScheduler.class, options);
+		try {
+			var execution = WorkflowClient.start(workflow::summarizeSlackChannelConversations);
+			log.info("Execution: {}", execution);
+		} catch (WorkflowExecutionAlreadyStarted e) {
+			log.info("Scheduler already running");
+		}
+	}
 }

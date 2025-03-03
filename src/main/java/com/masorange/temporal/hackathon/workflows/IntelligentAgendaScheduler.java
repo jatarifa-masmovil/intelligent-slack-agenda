@@ -1,30 +1,38 @@
 package com.masorange.temporal.hackathon.workflows;
 
-import com.masorange.temporal.hackathon.activities.MessagesActivities;
 import com.masorange.temporal.hackathon.activities.OpenAIActivity;
+import com.masorange.temporal.hackathon.activities.SlackActivity;
+import com.masorange.temporal.hackathon.activities.model.ChannelMessages;
 import com.masorange.temporal.hackathon.activities.model.Task;
-
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.masorange.temporal.hackathon.activities.model.TaskList;
+import com.masorange.temporal.hackathon.activities.model.TaskResponse;
+import com.masorange.temporal.hackathon.activities.model.TaskStatusEnum;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
+import io.temporal.workflow.SignalMethod;
 import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
-import lombok.SneakyThrows;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 @WorkflowInterface
 public interface IntelligentAgendaScheduler {
 
   @WorkflowMethod
-  List<Task> summarizeSlackChannelConversations();
+  void summarizeSlackChannelConversations();
+
+  @SignalMethod
+  void processPendingTasks(TaskResponse taskResponse);
 
   @Slf4j
   class IntelligentAgendaSchedulerImpl implements IntelligentAgendaScheduler {
+
+    private Map<Long, TaskStatusEnum> pendingStatuses = new HashMap<>();
+
 
     private final RetryOptions retryoptions = RetryOptions.newBuilder()
         .setInitialInterval(Duration.ofSeconds(1))
@@ -39,20 +47,45 @@ public interface IntelligentAgendaScheduler {
         .setScheduleToCloseTimeout(Duration.ofSeconds(5000))
         .build();
 
-    private final MessagesActivities channelMessages =
-        Workflow.newActivityStub(MessagesActivities.class, defaultActivityOptions);
+    private final SlackActivity channelMessages =
+        Workflow.newActivityStub(SlackActivity.class, defaultActivityOptions);
 
     private final OpenAIActivity openAIActivity = Workflow.newActivityStub(OpenAIActivity.class,
         defaultActivityOptions);
 
     @Override
-    @SneakyThrows
-    public List<Task> summarizeSlackChannelConversations() {
-      var messages = channelMessages.retrieveMessages(OffsetDateTime.now().minusMinutes(10));
-      var allMessages = String.join("\n", messages.messages().get("temporal-poc"));
-      var tasks = openAIActivity.calculateTasks(allMessages).getTasks();
-      System.out.println(new ObjectMapper().writeValueAsString(tasks));
-      return tasks;
+    public void summarizeSlackChannelConversations() {
+      // Do something awesome
+      ChannelMessages messages = channelMessages.retrieveMessages("provision", OffsetDateTime.now().minusDays(1));
+      var pendingtasks = openAIActivity.calculateTasks("chat");
+
+      for (Task task : pendingtasks.getTasks()) {
+        channelMessages.sendMessage("provision", task.getDescription());
+      }
+
+      initTaskStatus(pendingtasks);
+      Workflow.await(() -> pendingStatuses.values().stream().allMatch(status -> status != TaskStatusEnum.PENDING));
+
+      for (Task task : pendingtasks.getTasks()) {
+        if (TaskStatusEnum.ACCEPTED.equals(pendingStatuses.get(task.getId()))) {
+          channelMessages.createTask(task);
+        }
+      }
+
+      log.debug("Messages from channel: {}", messages);
     }
+
+    private void initTaskStatus(TaskList taskList) {
+      for (Task task : taskList.getTasks()) {
+        this.pendingStatuses.put(task.getId(), TaskStatusEnum.PENDING);
+      }
+    }
+
+    @Override
+    public void processPendingTasks(TaskResponse taskResponse) {
+      pendingStatuses.put(taskResponse.getId(), taskResponse.getTaskStatusEnum());
+      log.info("Messages from channel: {}", pendingStatuses);
+    }
+
   }
 }
