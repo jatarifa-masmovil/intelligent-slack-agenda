@@ -52,7 +52,7 @@ public interface IntelligentAgendaScheduler {
       var messages = channelMessages.retrieveMessages(OffsetDateTime.now().minusDays(1));
       var allMessages = messages.messages().get("temporal-poc").stream().collect(Collectors.joining("\n"));
       var tasks = openAIActivity.calculateTasks(allMessages).getTasks();
-      log.info("{}", new ObjectMapper().writeValueAsString(tasks));
+      System.out.println(new ObjectMapper().writeValueAsString(tasks));
       return tasks;
     }
   }
