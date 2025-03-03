@@ -1,9 +1,13 @@
 package com.masorange.temporal.hackathon.workflows;
 
 import com.masorange.temporal.hackathon.activities.MessagesActivities;
+import com.masorange.temporal.hackathon.activities.OpenAIActivity;
+import com.masorange.temporal.hackathon.activities.model.Task;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
@@ -16,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public interface IntelligentAgendaScheduler {
 
   @WorkflowMethod
-  void summarizeSlackChannelConversations();
+  List<Task> summarizeSlackChannelConversations();
 
   @Slf4j
   class IntelligentAgendaSchedulerImpl implements IntelligentAgendaScheduler {
@@ -37,11 +41,14 @@ public interface IntelligentAgendaScheduler {
     private final MessagesActivities channelMessages =
         Workflow.newActivityStub(MessagesActivities.class, defaultActivityOptions);
 
+    private final OpenAIActivity openAIActivity = Workflow.newActivityStub(OpenAIActivity.class,
+        defaultActivityOptions);
+
     @Override
-    public void summarizeSlackChannelConversations() {
-      // Do something awesome
+    public List<Task> summarizeSlackChannelConversations() {
       var messages = channelMessages.retrieveMessages(OffsetDateTime.now().minusDays(1));
-      log.debug("Messages from channel: {}", messages);
+      var allMessages = messages.messages().get("temporal-poc").stream().collect(Collectors.joining("\n"));
+      return openAIActivity.calculateTasks(allMessages).getTasks();
     }
   }
 }
