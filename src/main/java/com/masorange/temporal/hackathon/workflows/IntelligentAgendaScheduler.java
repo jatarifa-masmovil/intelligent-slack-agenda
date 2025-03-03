@@ -1,5 +1,6 @@
 package com.masorange.temporal.hackathon.workflows;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.masorange.temporal.hackathon.activities.MessagesActivities;
 import com.masorange.temporal.hackathon.activities.OpenAIActivity;
 import com.masorange.temporal.hackathon.activities.model.ChannelMessages;
@@ -7,19 +8,17 @@ import com.masorange.temporal.hackathon.activities.model.Task;
 import com.masorange.temporal.hackathon.activities.model.TaskList;
 import com.masorange.temporal.hackathon.activities.model.TaskResponse;
 import com.masorange.temporal.hackathon.activities.model.TaskStatusEnum;
-
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.workflow.SignalMethod;
 import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,7 +68,13 @@ public interface IntelligentAgendaScheduler {
       Workflow.await(
           () -> pendingStatuses.values().stream().allMatch(status -> status != TaskStatusEnum.PENDING));
 
-      slackActivities.createTasksList(pendingtasks);
+      TaskList acceptedTasks = new TaskList(
+          pendingtasks.getTasks().stream()
+              .filter(task -> pendingStatuses.get(task.getId()) == TaskStatusEnum.ACCEPTED)
+              .collect(Collectors.toList())
+      );
+
+      slackActivities.createTasksList(acceptedTasks);
     }
 
     private void initTaskStatus(TaskList taskList) {
