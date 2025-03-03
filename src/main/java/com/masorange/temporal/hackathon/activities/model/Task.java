@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Task {
 
-  public enum Priorite {
+  public enum Priority {
     HIGH,
     MEDIUM,
     LOW
@@ -23,6 +23,6 @@ public class Task {
 
   private long id;
   private String description;
-  private Priorite priority;
+  private Priority priority;
   private Status status;
 }
