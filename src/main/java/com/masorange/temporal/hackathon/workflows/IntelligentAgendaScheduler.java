@@ -2,8 +2,12 @@ package com.masorange.temporal.hackathon.workflows;
 
 import com.masorange.temporal.hackathon.activities.MessagesActivities;
 import com.masorange.temporal.hackathon.activities.OpenAIActivity;
+import com.masorange.temporal.hackathon.activities.model.Task;
 
 import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
@@ -11,13 +15,12 @@ import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 
 @WorkflowInterface
 public interface IntelligentAgendaScheduler {
 
   @WorkflowMethod
-  void summarizeSlackChannelConversations();
+  List<Task> summarizeSlackChannelConversations();
 
   @Slf4j
   class IntelligentAgendaSchedulerImpl implements IntelligentAgendaScheduler {
@@ -42,16 +45,10 @@ public interface IntelligentAgendaScheduler {
         defaultActivityOptions);
 
     @Override
-    public void summarizeSlackChannelConversations() {
-      // Do something awesome
-//      var messages = channelMessages.retrieveMessages("provision", OffsetDateTime.now().minusDays(1));
-      try {
-        var taskList = openAIActivity.calculateTasks(
-            IOUtils.toString(IntelligentAgendaScheduler.class.getResourceAsStream("/user-message.txt")));
-        log.debug("Messages from channel: {}", taskList);
-      } catch (Exception e) {
-        log.error("Error retrieving messages from channel", e);
-      }
+    public List<Task> summarizeSlackChannelConversations() {
+      var messages = channelMessages.retrieveMessages(OffsetDateTime.now().minusDays(1));
+      var allMessages = messages.messages().get("temporal-poc").stream().collect(Collectors.joining("\n"));
+      return openAIActivity.calculateTasks(allMessages).getTasks();
     }
   }
 }
