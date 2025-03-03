@@ -2,12 +2,23 @@ package com.masorange.temporal.hackathon.activities.model;
 
 public class ChannelMessage {
 
-  private final String author;
-  private final String content;
+  private String author;
+  private String content;
 
   private ChannelMessage(Builder builder) {
     author = builder.author;
     content = builder.content;
+  }
+
+  public ChannelMessage() {
+  }
+
+  public void setAuthor(String author) {
+    this.author = author;
+  }
+
+  public void setContent(String content) {
+    this.content = content;
   }
 
   @Override

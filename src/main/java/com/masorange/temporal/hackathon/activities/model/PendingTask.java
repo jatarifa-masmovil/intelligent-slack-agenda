@@ -2,14 +2,29 @@ package com.masorange.temporal.hackathon.activities.model;
 
 public class PendingTask {
 
-  private final String id;
-  private final String description;
-  private final String priority;
+  private String id;
+  private String description;
+  private String priority;
 
   private PendingTask(Builder builder) {
     id = builder.id;
     description = builder.description;
     priority = builder.priority;
+  }
+
+  public PendingTask() {
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public void setPriority(String priority) {
+    this.priority = priority;
   }
 
   @Override

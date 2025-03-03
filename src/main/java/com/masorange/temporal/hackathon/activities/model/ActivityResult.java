@@ -2,7 +2,14 @@ package com.masorange.temporal.hackathon.activities.model;
 
 public class ActivityResult {
 
-  private final String result;
+  private String result;
+
+  public void setResult(String result) {
+    this.result = result;
+  }
+
+  public ActivityResult() {
+  }
 
   @Override
   public String toString() {
@@ -10,6 +17,7 @@ public class ActivityResult {
         "result='" + result + '\'' +
         '}';
   }
+
 
   public String getResult() {
     return result;

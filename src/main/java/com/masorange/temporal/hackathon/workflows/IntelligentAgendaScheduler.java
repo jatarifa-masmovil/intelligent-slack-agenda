@@ -92,6 +92,7 @@ public interface IntelligentAgendaScheduler {
     @Override
     public void processPendingTasks(TaskResponse taskResponse) {
       pendingStatuses.put(taskResponse.getId(), taskResponse.getTaskStatusEnum());
+      log.info("Messages from channel: {}", pendingStatuses);
     }
 
   }

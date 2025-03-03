@@ -2,12 +2,23 @@ package com.masorange.temporal.hackathon.activities.model;
 
 public class TaskResponse {
 
-  private final String id;
-  private final TaskStatusEnum taskStatusEnum;
+  private String id;
+  private TaskStatusEnum taskStatusEnum;
 
   private TaskResponse(Builder builder) {
     id = builder.id;
     taskStatusEnum = builder.taskStatusEnum;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public void setTaskStatusEnum(TaskStatusEnum taskStatusEnum) {
+    this.taskStatusEnum = taskStatusEnum;
+  }
+
+  public TaskResponse() {
   }
 
   @Override
