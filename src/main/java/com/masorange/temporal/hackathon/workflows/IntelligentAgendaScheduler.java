@@ -49,7 +49,7 @@ public interface IntelligentAgendaScheduler {
     @Override
     @SneakyThrows
     public List<Task> summarizeSlackChannelConversations() {
-      var messages = channelMessages.retrieveMessages(OffsetDateTime.now().minusDays(1));
+      var messages = channelMessages.retrieveMessages(OffsetDateTime.now().minusMinutes(10));
       var allMessages = messages.messages().get("temporal-poc").stream().collect(Collectors.joining("\n"));
       var tasks = openAIActivity.calculateTasks(allMessages).getTasks();
       System.out.println(new ObjectMapper().writeValueAsString(tasks));
