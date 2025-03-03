@@ -56,7 +56,7 @@ public interface IntelligentAgendaScheduler {
     @Override
     public void summarizeSlackChannelConversations() {
       // Do something awesome
-      ChannelMessages messages = slackActivities.retrieveMessages(OffsetDateTime.now().minusMinutes(1));
+      ChannelMessages messages = slackActivities.retrieveMessages(OffsetDateTime.now().minusMinutes(5));
       var allMessages = String.join("\n", messages.messages().get("temporal-hackathon"));
       if (allMessages == null || allMessages.isEmpty()) {
         return;
