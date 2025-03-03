@@ -1,6 +1,6 @@
 package com.masorange.temporal.hackathon.workflows;
 
-import com.masorange.temporal.hackathon.activities.SlackActivity;
+import com.masorange.temporal.hackathon.activities.MessagesActivities;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -34,13 +34,13 @@ public interface IntelligentAgendaScheduler {
         .setScheduleToCloseTimeout(Duration.ofSeconds(5000))
         .build();
 
-    private final SlackActivity channelMessages =
-        Workflow.newActivityStub(SlackActivity.class, defaultActivityOptions);
+    private final MessagesActivities channelMessages =
+        Workflow.newActivityStub(MessagesActivities.class, defaultActivityOptions);
 
     @Override
     public void summarizeSlackChannelConversations() {
       // Do something awesome
-      var messages = channelMessages.retrieveMessages("provision", OffsetDateTime.now().minusDays(1));
+      var messages = channelMessages.retrieveMessages(OffsetDateTime.now().minusDays(1));
       log.debug("Messages from channel: {}", messages);
     }
   }

@@ -1,7 +1,8 @@
 package com.masorange.temporal.hackathon.activities;
 
 import java.util.List;
+import java.util.Map;
 
-public record ChannelMessages(List<String> messages) {
+public record ChannelMessages(Map<String, List<String>> messages) {
 
 }

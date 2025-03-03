@@ -53,9 +53,14 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>com.slack.api</groupId>
+      <artifactId>slack-api-client</artifactId>
+      <version>1.45.3</version>
+    </dependency>
+    <dependency>
       <artifactId>temporal-sdk</artifactId>
       <groupId>io.temporal</groupId>
-      <version>1.24.1</version>
+      <version>1.27.0</version>
     </dependency>
     <dependency>
       <artifactId>temporal-testing</artifactId>
