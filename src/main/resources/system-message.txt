@@ -3,9 +3,10 @@ Extract all tasks mentioned in the following conversation and generate a structu
 {
   "tasks": [
     {
+      "id": 1,
       "description": "Clearly describe the mentioned task",
-      "priority": "high | medium | low",
-      "status": "pending | in progress | completed"
+      "priority": "HIGH | MEDIUM | LOW",
+      "status": "PENDING | IN_PROGRESS | COMPLETED"
     }
   ]
 }
