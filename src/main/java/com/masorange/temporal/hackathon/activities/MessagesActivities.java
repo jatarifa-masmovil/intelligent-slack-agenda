@@ -1,11 +1,14 @@
 package com.masorange.temporal.hackathon.activities;
 
-import io.temporal.activity.ActivityInterface;
+import com.masorange.temporal.hackathon.activities.model.ChannelMessages;
+
 import java.time.OffsetDateTime;
+
+import io.temporal.activity.ActivityInterface;
 
 @ActivityInterface
 public interface MessagesActivities {
 
-	ChannelMessages retrieveMessages(OffsetDateTime fromDate);
+  ChannelMessages retrieveMessages(OffsetDateTime fromDate);
 
 }
