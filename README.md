@@ -38,7 +38,7 @@ sequenceDiagram
         Slack API->>SlackToWorkflowSignalEndpoint: Received slack response
         SlackToWorkflowSignalEndpoint->>Workflow: Workflow Signal with a task response
         alt User creates Jira task
-            Worklfow->>Jira: Create Jira task
+            Workflow->>Jira: Create Jira task
             Jira-->>Workflow: Task created
         else Workflow rejects task
             Workflow->>Workflow: Task rejected
