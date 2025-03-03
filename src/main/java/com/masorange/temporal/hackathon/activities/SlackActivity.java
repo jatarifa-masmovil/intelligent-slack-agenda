@@ -3,7 +3,7 @@ package com.masorange.temporal.hackathon.activities;
 import com.masorange.temporal.hackathon.activities.model.ActivityResult;
 import com.masorange.temporal.hackathon.activities.model.ChannelMessage;
 import com.masorange.temporal.hackathon.activities.model.ChannelMessages;
-import com.masorange.temporal.hackathon.activities.model.PendingTask;
+import com.masorange.temporal.hackathon.activities.model.Task;
 import io.temporal.activity.ActivityInterface;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -15,7 +15,7 @@ public interface SlackActivity {
 
   ActivityResult sendMessage(String channelId, String message);
 
-  ActivityResult createTask(PendingTask pendingTask);
+  ActivityResult createTask(Task pendingTask);
 
   class SlackActivityImpl implements SlackActivity {
 
@@ -33,7 +33,7 @@ public interface SlackActivity {
     }
 
     @Override
-    public ActivityResult createTask(PendingTask pendingTask) {
+    public ActivityResult createTask(Task pendingTask) {
       return new ActivityResult("OK");
     }
   }

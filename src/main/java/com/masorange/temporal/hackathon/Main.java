@@ -1,10 +1,10 @@
 package com.masorange.temporal.hackathon;
 
-import com.masorange.temporal.hackathon.activities.LlmActivity.LlmActivityImpl;
-import com.masorange.temporal.hackathon.activities.SlackActivity.SlackActivityImpl;
+import com.masorange.temporal.hackathon.activities.OpenAIActivity.OpenAIActivityImpl;
 import com.masorange.temporal.hackathon.workflows.IntelligentAgendaScheduler;
 import com.masorange.temporal.hackathon.workflows.IntelligentAgendaScheduler.IntelligentAgendaSchedulerImpl;
 
+import com.slack.api.Slack;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowExecutionAlreadyStarted;
 import io.temporal.client.WorkflowOptions;
@@ -22,7 +22,8 @@ public class Main {
     var worker = factory.newWorker("agenda-tasklisk");
 
 		worker.registerWorkflowImplementationTypes(IntelligentAgendaSchedulerImpl.class);
-    worker.registerActivitiesImplementations(new com.masorange.temporal.hackathon.activities.messages.SlackActivitiesImpl(Slack.getInstance()), new OpenAIActivityImpl());
+    worker.registerActivitiesImplementations(new com.masorange.temporal.hackathon.activities.messages.SlackActivitiesImpl(
+				Slack.getInstance()), new OpenAIActivityImpl());
 		factory.start();
 
 		var options = WorkflowOptions.newBuilder()

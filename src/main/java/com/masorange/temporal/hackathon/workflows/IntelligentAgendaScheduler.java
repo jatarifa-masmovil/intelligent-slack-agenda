@@ -1,20 +1,12 @@
 package com.masorange.temporal.hackathon.workflows;
 
-import com.masorange.temporal.hackathon.activities.MessagesActivities;
 import com.masorange.temporal.hackathon.activities.OpenAIActivity;
 import com.masorange.temporal.hackathon.activities.SlackActivity;
 import com.masorange.temporal.hackathon.activities.model.ChannelMessages;
-import com.masorange.temporal.hackathon.activities.model.PendingTask;
-import com.masorange.temporal.hackathon.activities.model.PendingTasks;
 import com.masorange.temporal.hackathon.activities.model.Task;
-
+import com.masorange.temporal.hackathon.activities.model.TaskList;
 import com.masorange.temporal.hackathon.activities.model.TaskResponse;
 import com.masorange.temporal.hackathon.activities.model.TaskStatusEnum;
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.workflow.SignalMethod;
@@ -39,7 +31,7 @@ public interface IntelligentAgendaScheduler {
   @Slf4j
   class IntelligentAgendaSchedulerImpl implements IntelligentAgendaScheduler {
 
-    private Map<String, TaskStatusEnum> pendingStatuses = new HashMap<>();
+    private Map<Long, TaskStatusEnum> pendingStatuses = new HashMap<>();
 
 
     private final RetryOptions retryoptions = RetryOptions.newBuilder()
@@ -62,19 +54,19 @@ public interface IntelligentAgendaScheduler {
         defaultActivityOptions);
 
     @Override
-    public List<Task> summarizeSlackChannelConversations() {
+    public void summarizeSlackChannelConversations() {
       // Do something awesome
       ChannelMessages messages = channelMessages.retrieveMessages("provision", OffsetDateTime.now().minusDays(1));
-      var pendingtasks = openAIActivity.calculateTasks(allMessages).getTasks();
+      var pendingtasks = openAIActivity.calculateTasks("chat");
 
-      for (PendingTask task : pendingtasks.messages()) {
+      for (Task task : pendingtasks.getTasks()) {
         channelMessages.sendMessage("provision", task.getDescription());
       }
 
       initTaskStatus(pendingtasks);
       Workflow.await(() -> pendingStatuses.values().stream().allMatch(status -> status != TaskStatusEnum.PENDING));
 
-      for (PendingTask task : pendingtasks.messages()) {
+      for (Task task : pendingtasks.getTasks()) {
         if (TaskStatusEnum.ACCEPTED.equals(pendingStatuses.get(task.getId()))) {
           channelMessages.createTask(task);
         }
@@ -83,8 +75,8 @@ public interface IntelligentAgendaScheduler {
       log.debug("Messages from channel: {}", messages);
     }
 
-    private void initTaskStatus(PendingTasks pendingTasks) {
-      for (PendingTask task : pendingTasks.messages()) {
+    private void initTaskStatus(TaskList taskList) {
+      for (Task task : taskList.getTasks()) {
         this.pendingStatuses.put(task.getId(), TaskStatusEnum.PENDING);
       }
     }

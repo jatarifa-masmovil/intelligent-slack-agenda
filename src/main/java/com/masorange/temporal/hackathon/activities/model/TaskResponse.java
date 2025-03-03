@@ -2,7 +2,7 @@ package com.masorange.temporal.hackathon.activities.model;
 
 public class TaskResponse {
 
-  private String id;
+  private Long id;
   private TaskStatusEnum taskStatusEnum;
 
   private TaskResponse(Builder builder) {
@@ -10,7 +10,7 @@ public class TaskResponse {
     taskStatusEnum = builder.taskStatusEnum;
   }
 
-  public void setId(String id) {
+  public void setId(Long id) {
     this.id = id;
   }
 
@@ -29,7 +29,7 @@ public class TaskResponse {
         '}';
   }
 
-  public String getId() {
+  public Long getId() {
     return id;
   }
 
@@ -39,13 +39,13 @@ public class TaskResponse {
 
   public static final class Builder {
 
-    private String id;
+    private Long id;
     private TaskStatusEnum taskStatusEnum;
 
     public Builder() {
     }
 
-    public Builder setId(String id) {
+    public Builder setId(Long id) {
       this.id = id;
       return this;
     }
