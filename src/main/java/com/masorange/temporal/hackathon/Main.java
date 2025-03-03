@@ -1,5 +1,6 @@
 package com.masorange.temporal.hackathon;
 
+import com.masorange.temporal.hackathon.activities.LlmActivity.LlmActivityImpl;
 import com.masorange.temporal.hackathon.activities.SlackActivity.SlackActivityImpl;
 import com.masorange.temporal.hackathon.workflows.IntelligentAgendaScheduler;
 import com.masorange.temporal.hackathon.workflows.IntelligentAgendaScheduler.IntelligentAgendaSchedulerImpl;
@@ -22,12 +23,13 @@ public class Main {
 
     worker.registerWorkflowImplementationTypes(IntelligentAgendaSchedulerImpl.class);
     worker.registerActivitiesImplementations(new SlackActivityImpl());
+    worker.registerActivitiesImplementations(new LlmActivityImpl());
     factory.start();
 
     var options = WorkflowOptions.newBuilder()
         .setTaskQueue("agenda-tasklisk")
         .setWorkflowId("IntelligentAgendaScheduler")
-        .setCronSchedule("*/1 * * * *")  // Each minute
+        .setCronSchedule("*/10 * * * *")  // Each 10 minutes
         .build();
     var workflow = client.newWorkflowStub(IntelligentAgendaScheduler.class, options);
     try {
