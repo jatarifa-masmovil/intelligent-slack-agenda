@@ -1,4 +1,4 @@
-Extract all tasks mentioned in the following conversation and generate a structured JSON with the following information for each task: description, priority (high, medium, low), and status (pending, in progress, completed). Only include clearly identifiable tasks and omit irrelevant information. Use this JSON format:
+Extract all tasks mentioned in the following conversation and generate a structured JSON with the following information for each task: description, priority (high, medium, low), and status (pending, in progress, completed). Only include clearly identifiable tasks and omit irrelevant information. Use this JSON format, and only output JSON not other kind of content:
 
 {
   "tasks": [

@@ -41,7 +41,6 @@ public interface OpenAIActivity {
       var tasksString = messages.stream()
           .flatMap(message -> message.content().stream())
           .collect(Collectors.joining("\n"));
-
       ObjectMapper objectMapper = new ObjectMapper();
       return objectMapper.readValue(tasksString, TaskList.class);
     }
