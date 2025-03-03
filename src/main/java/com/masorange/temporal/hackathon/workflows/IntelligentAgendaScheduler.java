@@ -9,11 +9,13 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @WorkflowInterface
@@ -45,10 +47,13 @@ public interface IntelligentAgendaScheduler {
         defaultActivityOptions);
 
     @Override
+    @SneakyThrows
     public List<Task> summarizeSlackChannelConversations() {
       var messages = channelMessages.retrieveMessages(OffsetDateTime.now().minusDays(1));
       var allMessages = messages.messages().get("temporal-poc").stream().collect(Collectors.joining("\n"));
-      return openAIActivity.calculateTasks(allMessages).getTasks();
+      var tasks = openAIActivity.calculateTasks(allMessages).getTasks();
+      log.info("{}", new ObjectMapper().writeValueAsString(tasks));
+      return tasks;
     }
   }
 }
