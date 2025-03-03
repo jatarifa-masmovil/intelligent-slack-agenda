@@ -7,7 +7,6 @@ import com.masorange.temporal.hackathon.activities.model.Task;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.temporal.activity.ActivityOptions;
@@ -50,7 +49,7 @@ public interface IntelligentAgendaScheduler {
     @SneakyThrows
     public List<Task> summarizeSlackChannelConversations() {
       var messages = channelMessages.retrieveMessages(OffsetDateTime.now().minusMinutes(10));
-      var allMessages = messages.messages().get("temporal-poc").stream().collect(Collectors.joining("\n"));
+      var allMessages = String.join("\n", messages.messages().get("temporal-poc"));
       var tasks = openAIActivity.calculateTasks(allMessages).getTasks();
       System.out.println(new ObjectMapper().writeValueAsString(tasks));
       return tasks;
