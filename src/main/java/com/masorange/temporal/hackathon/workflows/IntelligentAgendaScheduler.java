@@ -1,10 +1,9 @@
 package com.masorange.temporal.hackathon.workflows;
 
+import com.masorange.temporal.hackathon.activities.MessagesActivities;
 import com.masorange.temporal.hackathon.activities.OpenAIActivity;
-import com.masorange.temporal.hackathon.activities.SlackActivity;
 
 import java.time.Duration;
-import java.time.OffsetDateTime;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
@@ -36,8 +35,8 @@ public interface IntelligentAgendaScheduler {
         .setScheduleToCloseTimeout(Duration.ofSeconds(5000))
         .build();
 
-    private final SlackActivity channelMessages =
-        Workflow.newActivityStub(SlackActivity.class, defaultActivityOptions);
+    private final MessagesActivities channelMessages =
+        Workflow.newActivityStub(MessagesActivities.class, defaultActivityOptions);
 
     private final OpenAIActivity openAIActivity = Workflow.newActivityStub(OpenAIActivity.class,
         defaultActivityOptions);

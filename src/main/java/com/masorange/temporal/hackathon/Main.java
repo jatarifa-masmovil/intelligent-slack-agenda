@@ -2,6 +2,7 @@ package com.masorange.temporal.hackathon;
 
 import com.masorange.temporal.hackathon.activities.OpenAIActivity.OpenAIActivityImpl;
 import com.masorange.temporal.hackathon.activities.SlackActivity.SlackActivityImpl;
+import com.masorange.temporal.hackathon.activities.messages.SlackActivitiesImpl;
 import com.masorange.temporal.hackathon.workflows.IntelligentAgendaScheduler;
 import com.masorange.temporal.hackathon.workflows.IntelligentAgendaScheduler.IntelligentAgendaSchedulerImpl;
 
@@ -22,7 +23,7 @@ public class Main {
     var worker = factory.newWorker("agenda-tasklisk");
 
     worker.registerWorkflowImplementationTypes(IntelligentAgendaSchedulerImpl.class);
-    worker.registerActivitiesImplementations(new SlackActivityImpl(), new OpenAIActivityImpl());
+    worker.registerActivitiesImplementations(new SlackActivitiesImpl(), new OpenAIActivityImpl());
     factory.start();
 
     var options = WorkflowOptions.newBuilder()

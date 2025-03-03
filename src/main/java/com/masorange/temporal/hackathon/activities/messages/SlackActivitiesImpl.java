@@ -1,4 +1,4 @@
-package com.masorange.temporal.hackathon.activities.impl;
+package com.masorange.temporal.hackathon.activities.messages;
 
 import com.masorange.temporal.hackathon.activities.ChannelMessages;
 import com.masorange.temporal.hackathon.activities.MessagesActivities;
